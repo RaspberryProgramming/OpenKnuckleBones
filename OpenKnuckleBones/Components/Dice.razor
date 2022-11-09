@@ -1,0 +1,33 @@
+﻿
+<i class=@css />
+
+@code {
+
+    private short _number = 1;
+
+    #region Getters/Setters
+
+    private string css
+    {
+        get {
+            return $"bi bi-dice-{_number} dice";
+        }
+    }
+
+    [ParameterAttribute]
+    public short number {
+        get {
+            return _number;
+        }
+
+        set {
+            if(value <=6 && value >= 0) {
+                _number = value;
+            }
+        }
+    }
+
+    #endregion
+
+
+}

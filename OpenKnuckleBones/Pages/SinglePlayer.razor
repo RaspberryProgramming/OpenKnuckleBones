@@ -1,0 +1,91 @@
+﻿@page "/single-player"
+@using OpenKnuckleBones.Components
+<h1>Single Player</h1>
+
+Welcome to Single Player Knuckle Bones
+
+<div>
+    <div>
+    <Dice number=@rollNum/>
+    <button class="btn btn-primary" @onclick=onRollClick>Roll Dice</button>
+    </div>
+
+    <div>
+        <Board rolled=@rolled boardArr=@boardArr dim=@_dim onColClick=@onColClick/>
+    </div>
+</div>
+
+
+
+
+@code {
+    private short _rollNum = 1;
+    private bool _rolled = false;
+
+    private static short[] _dim = { 3, 3 };
+
+    private short[,] _boardArr = new short[_dim[0], _dim[1]];
+
+    private Random rnd = new Random();
+
+    #region Getters/Setters
+
+    public short rollNum {
+        get {
+            return _rollNum;
+        }
+
+        set {
+            if(!_rolled) {
+                _rollNum = value;
+            }
+        }
+    }
+
+    public bool rolled {
+        get {
+            return _rolled;
+        }
+    }
+
+    public short[,] boardArr {
+        get {
+            return _boardArr;
+        }
+    }
+
+    #endregion
+
+    #region Button Functions
+
+    private void onRollClick() {
+        rollNum = (short) (rnd.Next(5)+1);
+        _rolled = true;
+    }
+
+    private void onColClick(short col) {
+
+        short row = getLastIndex(_boardArr, col);
+
+        if(rolled && row >= 0) {
+            _boardArr[row,col] = rollNum;
+            _rolled = false;
+        }
+    }
+
+    #endregion
+
+    #region Helper Functions
+
+    private short getLastIndex(short[,] arr, short col) {
+        for(short i = 0; i < arr.Length; i++) {
+            if(arr[i, col] <= 0) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    #endregion
+}

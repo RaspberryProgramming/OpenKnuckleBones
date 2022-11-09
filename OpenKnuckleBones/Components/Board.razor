@@ -1,0 +1,78 @@
+﻿<table class="table">
+        
+    <thead>
+        @if (_rolled)
+        {
+            <tr>
+                <td>
+                    <button class="btn btn-secondary" @onclick="()=>onColClick(0)">Col 1</button>
+                </td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="()=>onColClick(1)">Col 2</button>
+                </td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="()=>onColClick(2)">Col 3</button>
+                </td>
+            </tr>
+        }
+    </thead>
+        
+    
+
+    <tbody>
+        @for(short i = 0; i < _dim[0]; i++)
+        {
+            <tr>
+                @for (short j = 0; j < _dim[0]; j++)
+                {
+                    <td>
+                        @if (_boardArr[i, j] > 0)
+                        {
+                            <Dice number=_boardArr[i,j]/>
+                        } 
+                        else
+                        {
+                            <i class="bi bi-question-square dice"></i>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    private short[] _dim;
+    private short[,] _boardArr;
+    private bool _rolled;
+
+    #region Parameters
+    [ParameterAttribute]
+    public short[,] boardArr {
+        set {
+            _boardArr = value;
+        }
+    }
+
+    [ParameterAttribute]
+    public short[] dim
+    {
+        set
+        {
+            _dim = value;
+        }
+    }
+
+    [ParameterAttribute]
+    public bool rolled {
+        set {
+            _rolled = value;
+        }
+    }
+
+    [Parameter]
+    public Action<short> onColClick { get; set;}
+
+    #endregion
+
+
+}
