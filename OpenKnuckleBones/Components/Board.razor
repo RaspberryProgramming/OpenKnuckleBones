@@ -4,15 +4,17 @@
         @if (_rolled)
         {
             <tr>
-                <td>
-                    <button class="btn btn-secondary" @onclick="()=>onColClick(0)">Col 1</button>
-                </td>
-                <td>
-                    <button class="btn btn-secondary" @onclick="()=>onColClick(1)">Col 2</button>
-                </td>
-                <td>
-                    <button class="btn btn-secondary" @onclick="()=>onColClick(2)">Col 3</button>
-                </td>
+                @for(short i = 1; i <= _dim[1]; i++) {
+                    var index = i;
+
+                    <td>
+                        
+                        <button class="btn btn-secondary" @onclick="()=>{
+                            onColClick(index);
+                            _rolled = false;
+                        }">Col @index</button>
+                    </td>
+                }
             </tr>
         }
     </thead>
@@ -38,6 +40,13 @@
                 }
             </tr>
         }
+
+        <tr>
+            @for(short i = 0; i < _dim[1]; i++)
+            {
+                <td>Total: @getColTotal(i)</td>
+            }
+        </tr>
     </tbody>
 </table>
 @code {
@@ -74,5 +83,54 @@
 
     #endregion
 
+    #region Functions
+    // Get Total of a column from _boardArr
+    private int getColTotal(short col){
+        int total = 0;
 
+        short[] colarr = getCol(col, _boardArr);
+
+        /* Rule: When one column has multiple of a single digit (I.E. 6), 
+                 that number is multiplied by the count of that digit.
+
+           Ex:   If column 3 looks like the following [4,6,6] the column
+                 score is (6x2)+4 = 16.
+         */
+
+
+        short count = 0; // Keeps count of each digit in the column
+
+        for(short i = 1; i <= 6; i++) {
+
+            count = 0;
+
+            for (short j = 0; j < _dim[0]; j++)
+            {
+                // if the current row (colarr[j]) == the current digit (i)
+                if (colarr[j] == i)
+                {
+                    colarr[j] = 0; // Set to 0 so next rule won't use it in the sum
+                    count++; // Increment count of digit i
+                }
+            }
+
+            total += count * i; // Multiply count of i (digit) with the digit itself
+                                // This works because if we were to have only 1, it's 1xi
+                                // if we have 2 6's, it's 2x6 which follows the rule
+        }       
+
+        return total;
+    }
+
+    private short[] getCol(short col, short[,] arr) {
+        short[] newarr = new short[_dim[0]];
+
+        for (short i = 0; i < _dim[0]; i++) {
+            newarr[i] = arr[i, col];
+        }
+
+        return newarr;
+    }
+
+    #endregion
 }

@@ -65,6 +65,8 @@ Welcome to Single Player Knuckle Bones
 
     private void onColClick(short col) {
 
+        --col;
+
         short row = getLastIndex(_boardArr, col);
 
         if(rolled && row >= 0) {
