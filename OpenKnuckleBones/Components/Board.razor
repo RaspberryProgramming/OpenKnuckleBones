@@ -8,11 +8,7 @@
                     var index = i;
 
                     <td>
-                        
-                        <button class="btn btn-secondary" @onclick="()=>{
-                            onColClick(index);
-                            _rolled = false;
-                        }">Col @index</button>
+                        <button class="btn btn-secondary" @onclick="()=>{onColClick.InvokeAsync(index);}">Col @index</button>
                     </td>
                 }
             </tr>
@@ -44,7 +40,7 @@
         <tr>
             @for(short i = 0; i < _dim[1]; i++)
             {
-                <td>Total: @getColTotal(i)</td>
+                <td>@getColTotal(i)</td>
             }
         </tr>
     </tbody>
@@ -79,11 +75,12 @@
     }
 
     [Parameter]
-    public Action<short> onColClick { get; set;}
+    public EventCallback<short> onColClick { get; set; }
 
     #endregion
 
     #region Functions
+
     // Get Total of a column from _boardArr
     private int getColTotal(short col){
         int total = 0;
@@ -94,9 +91,8 @@
                  that number is multiplied by the count of that digit.
 
            Ex:   If column 3 looks like the following [4,6,6] the column
-                 score is (6x2)+4 = 16.
+                 score is ((6+6)x2)+4 = 28.
          */
-
 
         short count = 0; // Keeps count of each digit in the column
 
@@ -114,9 +110,12 @@
                 }
             }
 
-            total += count * i; // Multiply count of i (digit) with the digit itself
-                                // This works because if we were to have only 1, it's 1xi
-                                // if we have 2 6's, it's 2x6 which follows the rule
+            total += (short)(i * count * count);
+            /* 
+                Multiply count of i (digit) with the digit itself
+                This works because if we were to have only 1, it's 1xi
+                if we have 2 6's, it's 2x6 which follows the rule
+            */
         }       
 
         return total;
