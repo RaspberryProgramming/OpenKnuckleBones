@@ -34,11 +34,6 @@ a, .btn-link {
     color: red;
 }
 
-.dice {
-    display:flex;
-    font-size: 4rem;
-}
-
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -71,6 +66,40 @@ a, .btn-link {
 .status-bar-safe-area {
     display: none;
 }
+
+.player {
+    display:flex;
+}
+
+.player.bottom {
+    flex-direction:row;
+}
+
+.player.top {
+    flex-direction:row-reverse;
+}
+
+.player-dice {
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    min-width: 4.5rem;
+    width: 10%;
+
+}
+
+.player-dice button {
+    display:flex;
+    width:fit-content;
+    height:fit-content;
+}
+
+.dice {
+    display: flex;
+    font-size: 4rem;
+}
+
 
 @supports (-webkit-touch-callout: none) {
     .status-bar-safe-area {
