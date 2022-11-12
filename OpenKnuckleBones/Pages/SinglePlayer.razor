@@ -6,10 +6,20 @@ Welcome to Single Player Knuckle Bones
 
 <div>
 
-    <!-- TODO: Implement Bot -->
+    <Modal @ref="WinnerModal">
+        <Title>Winner: @winner</Title>
+        <Body>
+        </Body>
+        <Footer>
+            <button type="button" class="btn btn-primary" @onclick=onReset>New Game</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => WinnerModal.Close()">Close</button>
+        </Footer>
+    </Modal>
+
     <div class="player top">
         <div class="player-dice">
             <Dice number=1 />
+            <p>Total: @getTotal(_botArr)</p>
         </div>
 
         <Board rolled=false boardArr=@botArr dim=@_dim onColClick=@onColClick />
@@ -23,7 +33,7 @@ Welcome to Single Player Knuckle Bones
                 <button class="btn btn-primary" @onclick=onRollClick>Roll Dice</button>
             }
 
-            <p>Total: @getTotal()</p>
+            <p>Total: @getTotal(_boardArr)</p>
         </div>
 
         <Board rolled=@rolled boardArr=@boardArr dim=@_dim onColClick=@onColClick/>
@@ -34,6 +44,8 @@ Welcome to Single Player Knuckle Bones
 
 
 @code {
+    #region Private Vars
+
     private short _rollNum = 0;
     private bool _rolled = false;
     private static short[] _dim = { 3, 3 };
@@ -42,9 +54,46 @@ Welcome to Single Player Knuckle Bones
 
     private short[,] _botArr = new short[_dim[0], _dim[1]];
 
+    private Modal WinnerModal { get; set; }
+
     private Random rnd = new Random();
 
+    #endregion
+
     #region Getters/Setters
+
+    public string winner {
+        get {
+
+            if(botTotal < playerTotal) {
+                return "Player";
+            } else if (playerTotal > botTotal) {
+                return "Bot";
+            }
+
+            return "";
+        }
+    }
+
+    public bool isEnded {
+        get {
+            return zeroCount(_boardArr) == 0 || zeroCount(_botArr) == 0;
+        }
+    }
+
+    public short botTotal {
+        get {
+            return getTotal(_botArr);
+        }
+    }
+
+    public short playerTotal
+    {
+        get
+        {
+            return getTotal(_boardArr);
+        }
+    }
 
     public short rollNum {
         get {
@@ -95,13 +144,40 @@ Welcome to Single Player Knuckle Bones
             turn(_boardArr, col, rollNum);
             _rolled = false;
 
-            runBotsTurn();
+            if (!isEnded)
+            {
+                runBotsTurn();
+            } else {
+                WinnerModal.Open();
+            }
         }
+    }
+
+    private void onReset() {
+        _rolled = false;
+        _rollNum = 0;
+
+        _boardArr = new short[_dim[0], _dim[1]];
+        _botArr = new short[_dim[0], _dim[1]];
+
+        WinnerModal.Close();
     }
 
     #endregion
 
     #region Helper Functions
+
+    private short zeroCount(short[,] arr) {
+        short count = 0;
+
+        foreach(short i in arr) {
+            if(i==0) {
+                count++;
+            }
+        }
+
+        return count;
+    }
 
     private void turn(short[,] arr, short col, short val) {
         short row = getLastIndex(arr, col);
@@ -116,6 +192,10 @@ Welcome to Single Player Knuckle Bones
         short botCol = (short)(rnd.Next(3));
 
         turn(_botArr, botCol, botTurn);
+
+        if (isEnded) {
+            WinnerModal.Open();
+        }
     }
 
     private short getLastIndex(short[,] arr, short col) {
@@ -128,19 +208,19 @@ Welcome to Single Player Knuckle Bones
         return -1;
     }
 
-    private short getTotal() {
+    private short getTotal(short[,] arr) {
 
         short total = 0;
 
         for(short i = 0; i < _dim[1]; i++) {
-            total += getColTotal(i);
+            total += getColTotal(i, arr);
         }
 
         return total;
     }
 
     // Get Total of a column from _boardArr
-    private short getColTotal(short col)
+    private short getColTotal(short col, short[,] arr)
     {
         short total = 0;
 
@@ -151,7 +231,7 @@ Welcome to Single Player Knuckle Bones
                  score is ((6+6)x2)+4 = 28.
          */
         
-        short[] colarr = getCol(col);
+        short[] colarr = getCol(col, arr);
 
         short count = 0; // Keeps count of each digit in the column
 
@@ -181,13 +261,13 @@ Welcome to Single Player Knuckle Bones
         return total;
     }
 
-    private short[] getCol(short col)
+    private short[] getCol(short col, short[,] arr)
     {
         short[] newarr = new short[_dim[0]];
 
         for (short i = 0; i < _dim[0]; i++)
         {
-            newarr[i] = _boardArr[i, col];
+            newarr[i] = arr[i, col];
         }
 
         return newarr;
