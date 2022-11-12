@@ -91,17 +91,32 @@ Welcome to Single Player Knuckle Bones
 
         --col;
 
-        short row = getLastIndex(_boardArr, col);
-
-        if(rolled && row >= 0) {
-            _boardArr[row,col] = rollNum;
+        if(rolled) {
+            turn(_boardArr, col, rollNum);
             _rolled = false;
+
+            runBotsTurn();
         }
     }
 
     #endregion
 
     #region Helper Functions
+
+    private void turn(short[,] arr, short col, short val) {
+        short row = getLastIndex(arr, col);
+
+        arr[row, col] = val;
+
+    }
+
+    private void runBotsTurn() {
+
+        short botTurn = (short)(rnd.Next(5) + 1);
+        short botCol = (short)(rnd.Next(3));
+
+        turn(_botArr, botCol, botTurn);
+    }
 
     private short getLastIndex(short[,] arr, short col) {
         for(short i = 0; i < arr.Length; i++) {
