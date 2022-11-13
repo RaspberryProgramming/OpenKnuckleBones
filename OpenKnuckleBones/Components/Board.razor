@@ -21,7 +21,7 @@
         @for(short i = 0; i < _dim[0]; i++)
         {
             <tr>
-                @for (short j = 0; j < _dim[0]; j++)
+                @for (short j = 0; j < _dim[1]; j++)
                 {
                     <td>
                         @if (_boardArr[i, j] > 0)
@@ -46,9 +46,13 @@
     </tbody>
 </table>
 @code {
+    #region Private Vars
+    
     private short[] _dim;
     private short[,] _boardArr;
     private bool _rolled;
+
+    #endregion
 
     #region Parameters
     [ParameterAttribute]

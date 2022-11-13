@@ -141,7 +141,7 @@ Welcome to Single Player Knuckle Bones
         --col;
 
         if(rolled) {
-            turn(_boardArr, col, rollNum);
+            turn(_boardArr, _botArr, col, rollNum);
             _rolled = false;
 
             if (!isEnded)
@@ -179,10 +179,16 @@ Welcome to Single Player Knuckle Bones
         return count;
     }
 
-    private void turn(short[,] arr, short col, short val) {
-        short row = getLastIndex(arr, col);
+    private void turn(short[,] playedArr, short[,] opposingArr,short col, short val) {
+        
+        // Rule: When player selects a column to place a dice, 
+        //       all enemies dice with equal value from that 
+        //       same col are removed
+        remValFromCol(opposingArr, col, val);
 
-        arr[row, col] = val;
+        short row = getLastIndex(playedArr, col);
+
+        playedArr[row, col] = val;
 
     }
 
@@ -191,10 +197,30 @@ Welcome to Single Player Knuckle Bones
         short botTurn = (short)(rnd.Next(5) + 1);
         short botCol = (short)(rnd.Next(3));
 
-        turn(_botArr, botCol, botTurn);
+        turn(_botArr, _boardArr, botCol, botTurn);
 
         if (isEnded) {
             WinnerModal.Open();
+        }
+    }
+
+    private void remValFromCol(short[,] arr, short col, short val) {
+        for (short i = 0; i < _dim[1]; i++)
+        {
+            // Check if we remove dice from this row
+
+            if (arr[i, col] == val)
+            {
+                arr[i, col] = 0; // Remove row
+            }
+
+            // Swap
+
+            if (i > 0 && arr[i - 1, col] == 0)
+            {
+                arr[i - 1, col] = arr[i, col]; // Move current row down
+                arr[i, col] = 0; // set current row to 0
+            }
         }
     }
 
